@@ -11,11 +11,17 @@ STATIC_DOC_ROOT = path.join(path.abspath(path.dirname(__file__)),
 # LDAP configuration
 LDAP_ENABLE = False
 
+FILE_STORE_PATH = path.abspath(path.join(path.dirname(__file__),
+    '../var/store/'))
+STAGING_PATH = path.abspath(path.join(path.dirname(__file__),
+    "../var/staging/"))
+
 ADMIN_MEDIA_STATIC_DOC_ROOT = ''
 HANDLEURL = ''
 SITE_ID = '1'
 MEDIA_URL = '/site_media/'
 TEMPLATE_DIRS = ['.']
+#TEMPLATE_DIRS = ['.', 'tardis_portal/']
 
 # TODO: move vbl auth provider settings to mecat module
 AUTH_PROVIDERS = (('localdb', 'Local DB',
@@ -55,6 +61,7 @@ VBLSTORAGEGATEWAY = \
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+LOG_FILENAME = None
 # LOG_FILENAME = '/var/log/tardis/tardis.log'
 
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
