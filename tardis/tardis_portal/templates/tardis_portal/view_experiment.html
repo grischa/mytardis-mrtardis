@@ -31,6 +31,7 @@
 {% load basiccomparisonfilters %}
 {% load parametertypecheck %}
 {% load uploadify_tags %}
+{% load dynurl %}
 
 {% block script %}
 
@@ -62,6 +63,9 @@
 	  <li><a href="{% url tardis.tardis_portal.views.experiment_description experiment.id %}">Description</a></li>
 	  <li><a href="{% url tardis.tardis_portal.views.experiment_datasets experiment.id %}">Datasets ({{ experiment.dataset_set.count }})</a></li>
 	  {% if experiment.ftp_location %}<li><a href="/ajax/ftp/{{experiment.id}}">FTP Download</a></li>{% endif %}
+	  {% for appurl, appname in apps %}
+	    <li><a href="{% dynurl appurl experiment.id %}">{{ appname }}</a></li>
+	  {% endfor %}
 	</ul>
 
       </div><!-- End tab container -->

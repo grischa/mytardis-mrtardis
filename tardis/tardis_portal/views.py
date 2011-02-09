@@ -250,6 +250,14 @@ def view_experiment(request, experiment_id):
     if 'error' in request.GET:
         c['error'] = request.GET['error']
 
+    appurls = ['%s.%s.views.index' % (settings.TARDIS_APP_ROOT, app)
+               for app in settings.TARDIS_APPS]
+    import sys
+    appnames = [sys.modules['%s.%s.settings' %
+                (settings.TARDIS_APP_ROOT, app)].NAME
+                for app in settings.TARDIS_APPS]
+    c['apps'] = zip(appurls, appnames)
+
     return HttpResponse(render_response_index(request,
                         'tardis_portal/view_experiment.html', c))
 
@@ -793,8 +801,7 @@ def retrieve_datafile_list(request, dataset_id):
 
     if request.user.is_authenticated():
         experiment_id = Experiment.objects.get(dataset__id=dataset_id).id
-        is_owner = authz.has_experiment_ownership(experiment_id,
-                                                  request.user.id)
+        is_owner = authz.has_experiment_ownership(request, experiment_id)
 
     c = Context({
         'dataset': dataset,

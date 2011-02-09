@@ -111,6 +111,12 @@ display_urls = patterns(
      'display_datafile_image'),
     )
 
+apppatterns = patterns('',)
+for app in settings.TARDIS_APPS:
+    apppatterns += patterns('tardis.apps',
+                            (r'^%s/' % app,
+                             include('%s.%s.urls' %
+                                     (settings.TARDIS_APP_ROOT, app))))
 
 urlpatterns = patterns(
     # (r'^search/quick/$', 'tardis.tardis_portal.views.search_quick'),
@@ -162,4 +168,7 @@ urlpatterns = patterns(
     (r'^admin/(.*)', admin.site.root),
 
     (r'^upload/(?P<dataset_id>\d+)/$', 'tardis.tardis_portal.views.upload'),
+
+    # Apps
+    (r'^apps/', include(apppatterns)),
 )
