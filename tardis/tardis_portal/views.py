@@ -230,11 +230,42 @@ def view_experiment(request, experiment_id):
     :rtype: :class:`django.http.HttpResponse`
 
     """
-    c = Context({'upload_complete_url':
-                     reverse('tardis.tardis_portal.views.upload_complete'),
-                 'searchDatafileSelectionForm':
-                     getNewSearchDatafileSelectionForm(),
-                 })
+    c = Context({})
+
+    try:
+        experiment = Experiment.safe.get(request, experiment_id)
+    except PermissionDenied:
+        return return_response_error(request)
+    except Experiment.DoesNotExist:
+        return return_response_not_found(request)
+
+    c['experiment'] = experiment
+    c['subtitle'] = experiment.title
+    c['nav'] = [{'name': 'Data', 'link': '/experiment/view/'},
+                {'name': experiment.title,
+                 'link': experiment.get_absolute_url()}]
+
+    if 'status' in request.GET:
+        c['status'] = request.GET['status']
+    if 'error' in request.GET:
+        c['error'] = request.GET['error']
+
+    return HttpResponse(render_response_index(request,
+                        'tardis_portal/view_experiment.html', c))
+
+
+@authz.experiment_access_required
+def experiment_description(request, experiment_id):
+    """View an existing experiment's description. To be loaded via ajax.
+
+    :param request: a HTTP Request instance
+    :type request: :class:`django.http.HttpRequest`
+    :param experiment_id: the ID of the experiment to be edited
+    :type experiment_id: string
+    :rtype: :class:`django.http.HttpResponse`
+
+    """
+    c = Context({})
 
     try:
         experiment = Experiment.safe.get(request, experiment_id)
@@ -254,15 +285,6 @@ def view_experiment(request, experiment_id):
     c['datafiles'] = \
         Dataset_File.objects.filter(dataset__experiment=experiment_id)
 
-    # calculate the sum of the datafile sizes
-    size = 0
-    for df in c['datafiles']:
-        try:
-            size = size + long(df.size)
-        except:
-            pass
-    c['size'] = size
-
     acl = ExperimentACL.objects.filter(pluginId=django_user,
                                        experiment=experiment,
                                        isOwner=True)
@@ -279,7 +301,58 @@ def view_experiment(request, experiment_id):
         c['error'] = request.GET['error']
 
     return HttpResponse(render_response_index(request,
-                        'tardis_portal/view_experiment.html', c))
+                        'tardis_portal/ajax/experiment_description.html', c))
+
+
+@authz.experiment_access_required
+def experiment_datasets(request, experiment_id):
+    """View a listing of dataset of an existing experiment as ajax loaded tab.
+
+    :param request: a HTTP Request instance
+    :type request: :class:`django.http.HttpRequest`
+    :param experiment_id: the ID of the experiment to be edited
+    :type experiment_id: string
+    :param template_name: the path of the template to render
+    :type template_name: string
+    :rtype: :class:`django.http.HttpResponse`
+
+    """
+    c = Context({'upload_complete_url':
+                     reverse('tardis.tardis_portal.views.upload_complete'),
+                 'searchDatafileSelectionForm':
+                     getNewSearchDatafileSelectionForm(),
+                 })
+
+    try:
+        experiment = Experiment.safe.get(request, experiment_id)
+    except PermissionDenied:
+        return return_response_error(request)
+    except Experiment.DoesNotExist:
+        return return_response_not_found(request)
+
+    c['experiment'] = experiment
+    c['datafiles'] = \
+        Dataset_File.objects.filter(dataset__experiment=experiment_id)
+
+    # calculate the sum of the datafile sizes
+    size = 0
+    for df in c['datafiles']:
+        try:
+            size = size + long(df.size)
+        except:
+            pass
+    c['size'] = size
+
+    c['protocols'] = [df['protocol'] for df in
+                      c['datafiles'].values('protocol').distinct()]
+
+    if 'status' in request.GET:
+        c['status'] = request.GET['status']
+    if 'error' in request.GET:
+        c['error'] = request.GET['error']
+
+    return HttpResponse(render_response_index(request,
+                        'tardis_portal/ajax/experiment_datasets.html', c))
 
 
 @login_required
