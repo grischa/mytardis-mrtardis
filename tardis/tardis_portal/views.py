@@ -292,6 +292,15 @@ def experiment_description(request, experiment_id):
     # TODO: resolve usernames through UserProvider!
     c['owners'] = [User.objects.get(pk=str(a.entityId)) for a in acl]
 
+    # calculate the sum of the datafile sizes
+    size = 0
+    for df in c['datafiles']:
+        try:
+            size = size + long(df.size)
+        except:
+            pass
+    c['size'] = size
+
     c['protocols'] = [df['protocol'] for df in
                       c['datafiles'].values('protocol').distinct()]
 
@@ -333,15 +342,6 @@ def experiment_datasets(request, experiment_id):
     c['experiment'] = experiment
     c['datafiles'] = \
         Dataset_File.objects.filter(dataset__experiment=experiment_id)
-
-    # calculate the sum of the datafile sizes
-    size = 0
-    for df in c['datafiles']:
-        try:
-            size = size + long(df.size)
-        except:
-            pass
-    c['size'] = size
 
     c['protocols'] = [df['protocol'] for df in
                       c['datafiles'].values('protocol').distinct()]
