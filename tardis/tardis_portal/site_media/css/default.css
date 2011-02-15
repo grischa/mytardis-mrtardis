@@ -544,10 +544,20 @@ table.experiment-table th {
 	padding: 0px;
 	width: 90%;
 	}
-
+	
 	.msg_head {
 	padding: 5px 10px;
 	cursor: pointer;
+	position: relative;
+	background-color: #dcdcdc;
+    color: #404040;
+	margin:1px;
+	font-size: 14px;
+	font-weight: bold;
+	}
+
+	.my_files {
+	padding: 5px 10px;
 	position: relative;
 	background-color: #dcdcdc;
     color: #404040;
