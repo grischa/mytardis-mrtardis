@@ -1,0 +1,27 @@
+<script type="text/javascript">
+console.log("logging works");
+$(document).ready(function(){
+    $("form[id=HPCSetupForm]").live("submit", function() {
+	console.log("submitting form");
+	$.post("{% url tardis.apps.mrtardis.views.test_user_setup experiment_id %}",
+	       $("form[id=HPCSetupForm]").serialize(),
+	       function(data) {
+		   $("#mrtardis").html(data);
+	       });
+	return false;
+    });
+});
+</script>
+<b>Please first set up your HPC connection in two steps:</b>
+<ol>
+<li>Please copy the following public key and paste it into the <i>.ssh/authorized_keys</i> file in your Monash Sun Grid home directory.
+<textarea cols="100" rows="5" readonly>
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA10u+WBDCBpu2z/Sk4xCx7ARCB6kLSCrfFnNoF3/Rq9365k8PmOmx7dANKpBnqdihlxLeqJqlM3s8snvWtad0e0rA50jX5tCXd8ToNtHJmCYVWDndjqKB7qfjZNPnSB4x2XGcnw5XS6336J7/YHWly9evebwAJPHyVCHwF9TCwvwc7Lx46PFf1x4n3sX5bRUkPDNZMWETEExWeIelGZiBMNpum86FUmsl2OrdHsSLoJ9Xczo1Y1pYDZQPOKRcGriqgKfeyQDp37uBg1XcLbeLrwyVrqIvXMXMzVGHSDSthI2Tvy2y/EJ9Pg01fkd2iPAjjhV3gLiVRxYHbhcdJdWvkQ== grischa@dvr-merc-002.adm.monash.edu.au
+</textarea>
+</li>
+<li>Enter your Monash Authcate here and press submit<br/>
+<form id="HPCSetupForm" method="POST">
+{{ HPCSetupForm }} <input id="HPCSetupForm" type="submit" value="Submit" />
+</form>
+</li>
+</ol>

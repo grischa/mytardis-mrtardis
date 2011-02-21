@@ -1,0 +1,52 @@
+<script type="text/javascript">
+$(document).ready(function() {
+    var username = "{{ hpc_username }}";
+    if (username == "False") {
+	$("#HPCset-up").hide();
+	$.ajax({
+	    url: "{% url tardis.apps.mrtardis.views.test_user_setup experiment_id %}",
+	    success:
+ 	    function(data){
+		$("#setupHPC").html(data);
+		$("#setupHPC").show();
+		$("#mrtardis").hide();
+	    },
+	       dataType: "html",
+	      });
+    } else {
+	$("#mrtardis").show();
+	$("#HPCset-up").show();
+	$("#setupHPC").hide();
+    }
+});
+</script>
+<p id="setupHPC">
+
+</p>
+<div id="mrtardis">
+  <h2>Simple Molecular Replacements on the Monash Grid</h2>
+  <h3>Please select what you would like to do next:</h3>
+  <p>
+    <b><a href="startMR">Set up a new run</a></b>
+    <form >{{ newDSForm }}
+    </form>
+  </p>
+  <p>
+    <b><a href="continueMR">Continue an interrupted setup</a></b>
+    <form >{{ continueForm }}</form>
+  </p>
+  <p>
+    <b><a href="viewMR">View the results of finished runs</a></b>
+    <form >{{ viewForm }}</form>
+  </p>
+  <p>
+    <b><a href="rerunMR">Copy, edit and re-run a previous Molecular Replacement</a></b>
+    <form >{{ rerunForm }}</form>
+  </p>
+  <p>
+    Experiment id: {{ experiment_id }}
+  </p>
+</div>
+<p id="HPCset-up" style="text-align: right; font-size:80%;">
+Your HPC resource is set up and ready to use. You are using authcate username {{ hpc_username }} on the Monash Sun Grid.<br /><a href="changeUsername" >Change username</a>
+</p>
