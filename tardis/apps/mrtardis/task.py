@@ -29,11 +29,11 @@ class Task():
         :param type: the type of task to search for as defined
             in the schema name
         :type type: string
+        yields DatasetParameterSet
         """
-        queryargs = {'schema': Task.schema}
+        schema = Task.schema
         if type != "all":
-            queryargs['schema'] = Task.schema + "/" + type
+            schema += "/" + type
         DPSs = DatasetParameterSet.objects.filter(
-            schema__namespace__startswith=Task.schema)
-        for dps in DPSs:
-            yield dps.dataset
+            schema__namespace__startswith=schema)
+        return DPSs
