@@ -239,3 +239,16 @@ class ExperimentManager(models.Manager):
             if group:
                 result += group
         return result
+
+
+class DatasetParameterManager(models.Manager):
+    def get_dict(self, parameterset):
+        pars = super(DatasetParameterManager,
+                     self).get_query_set().filter(parameterset=parameterset)
+        retval = dict()
+        for par in pars:
+            if par.name.is_numeric:
+                retval[repr(par.name)] = par.numerical_value
+            else:
+                retval[repr(par.name)] = par.string_value
+        return retval

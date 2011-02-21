@@ -37,13 +37,10 @@
 
   <script type="text/javascript">
     $(function() {
-	$("#tabs").tabs({cookie: { expires: 30 } });
-    });
-  </script>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-
+	$("#tabs").tabs({
+	    ajaxOptions: {dataType: "html"},
+	    cookie: { expires: 30 },
+	});
     });
   </script>
 

@@ -48,6 +48,7 @@ from django.contrib.auth.models import User, Group
 from django.utils.safestring import SafeUnicode
 
 from tardis.tardis_portal.managers import ExperimentManager
+from tardis.tardis_portal.managers import DatasetParameterManager
 
 
 class UserProfile(models.Model):
@@ -177,7 +178,8 @@ class Experiment(models.Model):
 
 
 class ExperimentACL(models.Model):
-    """The ExperimentACL table is the core of the `Tardis Authorisation framework
+    """The ExperimentACL table is the core of the
+    `Tardis Authorisation framework
     <http://code.google.com/p/mytardis/wiki/AuthorisationEngineAlt>`_
 
     :attribute pluginId: the the name of the auth plugin being used
@@ -284,6 +286,19 @@ class Dataset(models.Model):
 
     def __unicode__(self):
         return self.description
+
+    def get_metadata(self, schemaname=None):
+        if schemaname:
+            schemaarg = {'schema': Schema.objects.get(namespace=schemaname)}
+        else:
+            schemaarg = {}
+        parametersets = DatasetParameterSet.objects.filter(dataset=self,
+                                                           **schemaarg)
+        returndict = dict()
+        for parset in parametersets:
+            metadata = DatasetParameter.objects.get_dict(parameterset=parset)
+            returndict[parset.schema.namespace] = metadata
+        return returndict
 
 
 class Dataset_File(models.Model):
@@ -524,6 +539,7 @@ class DatasetParameter(models.Model):
     name = models.ForeignKey(ParameterName)
     string_value = models.TextField(null=True, blank=True)
     numerical_value = models.FloatField(null=True, blank=True)
+    objects = DatasetParameterManager()
 
     def __unicode__(self):
         if self.name.is_numeric:
