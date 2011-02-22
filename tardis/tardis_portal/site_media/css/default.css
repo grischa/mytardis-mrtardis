@@ -308,7 +308,7 @@ img.right {
 
 #bottombar {
 	clear: both;
-	width: 1000px;
+	width: 960px;
 	background: #000000;
 	color: #CCCCCC;
 	padding: 10px 0 0 0;
@@ -544,7 +544,7 @@ table.experiment-table th {
 	padding: 0px;
 	width: 90%;
 	}
-	
+
 	.msg_head {
 	padding: 5px 10px;
 	cursor: pointer;
