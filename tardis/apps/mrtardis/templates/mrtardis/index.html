@@ -28,27 +28,26 @@ $(document).ready(function() {
 	    type: "POST",
 	    url: "{% url tardis.apps.mrtardis.views.MRform experiment_id %}",
 	    data: postdata,
-	    //dataType: "json",
 	    success: function(data) {
 		$("#mrtardis").html(data);
 	    }
 	});
     }
-    $("form[id=newDS]").live("submit", function() {
+    $("form[id=newDS]").bind("submit", function() {
 	postdata = {'action': 'newDS',
 		    'description': $("#id_description").val(),
 		   }
 	respondToForm(postdata);
 	return false;
     });
-    $("form[id=continueDS]").live("submit", function() {
+    $("form[id=continueDS]").bind("submit", function() {
 	postdata = {'action': 'continue',
 		    'dataset': $("#continueDS #id_dataset").val(),
 		   }
 	respondToForm(postdata);
 	return false;
     });
-    $("form[id=rerunDS]").live("submit", function() {
+    $("form[id=rerunDS]").bind("submit", function() {
 	postdata = {'action': 'rerunDS',
 		    'dataset': $("#rerunDS #id_dataset").val(),
 		   }
@@ -57,7 +56,7 @@ $(document).ready(function() {
     });
 
     // different url for displaying data
-    $("form[id=viewDS]").live("submit", function() {
+    $("form[id=viewDS]").bind("submit", function() {
 	postdata = {'action': 'viewDS',
 		    'dataset': $("#viewDS #id_dataset").val(),
 		   }
