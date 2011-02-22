@@ -1,5 +1,6 @@
 from task import Task
 from tardis.tardis_portal.models import DatasetParameter
+from tardis.tardis_portal.models import Schema
 from tardis.tardis_portal.models import ParameterName
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -19,7 +20,10 @@ class MRtask(Task):
                 yield dps
             else:
                 try:
-                    parname = ParameterName.objects.get(name="TaskStatus")
+                    schema = Schema.objects.get(
+                        namespace__endswith=MRtask.type)
+                    parname = ParameterName.objects.get(name="TaskStatus",
+                                                        schema=schema)
                     if status == DatasetParameter.objects.get(
                         parameterset=dps, name=parname).string_value:
                         yield dps

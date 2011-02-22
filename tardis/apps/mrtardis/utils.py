@@ -17,9 +17,9 @@ def test_hpc_connection(user):
         hpcuser = HPCUser.objects.get(user=user)
     except HPCUser.DoesNotExist:
         return False
-    logger.debug(dir(hpcuser))
+    #logger.debug(dir(hpcuser))
     if hpcuser.testedConnection:
-        logger.debug("testConnection = True")
+        #logger.debug("testConnection = True")
         return hpcuser.hpc_username
     myHPC = hpc.hpc(secrets.hostname,
                     hpcuser.hpc_username,
@@ -27,7 +27,7 @@ def test_hpc_connection(user):
                     key=secrets.privatekey, keytype="rsa")
     if myHPC.testConnection():
         hpcuser.testedConnection = True
-        logger.debug("tested for real: " + repr(hpcuser.testedConnection))
+        #logger.debug("tested for real: " + repr(hpcuser.testedConnection))
         hpcuser.save()
         return hpcuser.hpc_username
     else:

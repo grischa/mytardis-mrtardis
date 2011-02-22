@@ -1,0 +1,58 @@
+<script type="text/javascript">
+$(document).ready(function(){
+    function updateParForm() {
+	$.ajax({
+	    type: "POST",
+	    url: "{% url tardis.apps.mrtardis.views.parForm experiment_id %}",
+	    data: {
+		dataset: {{ dataset }}
+	    },
+	    //dataType: "json",
+	    success: function(data) {
+		$("#parForm").html(data);
+	    }
+	});
+    }
+
+    $("#uploadify").live("allUploadsComplete", function(e, data){
+        dataset_id = {{ dataset }}
+	updateParForm();
+    });
+    $('.upload_files_link').live('click', function( event ){
+	$('.upload_files_container').each(function(index) {
+            $(this).html("");
+	});
+	$('.upload_files_link').each(function(index) {
+            $(this).show();
+            $(this).html('Upload Files To Dataset');
+	});
+	$(this).hide();
+	dataset_id = $(this).siblings('.dataset_id').val();
+	$(this).siblings(".upload_files_container").load("/ajax/upload_files/" + dataset_id + "/");
+    });
+});
+</script>
+<h2>Job/dataset name: {{ dataset.description }}</h2>
+<h3>MTZ file</h3>
+<p><b>Please upload your structure factors as MTZ file.</b> <br/>If you accidentally upload the wrong one, please cancel this form (see below) and start over.
+</p>
+<div id="uploadMTZfile">
+  <a href="uploadMTZfile">Click here to upload your MTZ file</a>
+</div>
+
+<h3>PDB file(s)</h3>
+<p><b>Please upload one or more PDB files.</b><br/> You can upload them separately or in a zip file or mix both.
+</p>
+<div id="uploadPDFfiles">
+  <a href="uploadPDBfiles">Click here to upload your PDB file(s)</a>
+</div>
+
+<h3>Run parameters</h3>
+<div id="parForm">
+</div>
+
+
+<!-- debug <p>
+Dataset ID: {{ dataset }}
+Experiment ID: {{ experiment_id }}
+</p> -->

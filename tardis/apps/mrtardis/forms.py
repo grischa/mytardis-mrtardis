@@ -8,17 +8,6 @@ class HPCSetupForm(forms.Form):
     hpc_username = forms.CharField(max_length=20)
 
 
-class MRFileSelect(forms.Form):
-    """
-    Form to select dataset to run MR on.
-    """
-    dataset = forms.ChoiceField()
-
-    def __init__(self, choices):
-        super(MRFileSelect, self).__init__()
-        self.fields['dataset'].choices = choices
-
-
 # examples in comments
 class MRForm(forms.Form):
     # "FP" single value or array. needs selector
@@ -88,3 +77,15 @@ class RmsdForm(forms.Form):
 #RmsdFormset = formset_factory(RmsdForm)
 #formset = RmsdFormset()
 #for form in formset.forms:
+
+
+class selectDSForm(forms.Form):
+    dataset = forms.ChoiceField()
+
+    def __init__(self, choices):
+        super(selectDSForm, self).__init__()
+        self.fields['dataset'].choices = choices
+
+
+class DatasetDescriptionForm(forms.Form):
+    description = forms.CharField(widget=forms.TextInput(attrs={'size': '40'}))
