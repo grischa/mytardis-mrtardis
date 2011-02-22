@@ -3,10 +3,8 @@
 {% load parametertypecheck %}
 {% load uploadify_tags %}
 
-
 {% block script %}
-
-  <script type="text/javascript">
+<script type="text/javascript">
     $("#uploadify").live("allUploadsComplete", function(e, data){
 	dataset_id = $(this).parents('.upload_files_container'
 				    ).siblings('.dataset_id').val();
@@ -284,40 +282,39 @@
 
     });
 
-  </script>
-
+</script>
 {% endblock %}
-
 
 <div id="experiment_datasets">
   <div class="download_entire_experiment">
-  {% for p in protocols %}
+    {% for p in protocols %}
 
-    <p>
-      {% if p %}
-	<strong><a href="/{{p}}/download/experiment/{{experiment.id}}/">Download Entire Experiment ({{p|upper}})</a></strong><br/>
-      {% else %}
-	<strong><a href="/download/experiment/{{experiment.id}}/">Download Entire Experiment</a></strong><br/>
-      {% endif %}
-    </p>
-  {% endfor %}
-</div>
-<form method="POST" action="/download/datafiles/" target="_blank">
-  <input type="hidden" name="expid" value="{{experiment.id}}"/>
+      <p>
+	{% if p %}
+	  <strong><a href="/{{p}}/download/experiment/{{experiment.id}}/">Download Entire Experiment ({{p|upper}})</a></strong><br/>
+	{% else %}
+	  <strong><a href="/download/experiment/{{experiment.id}}/">Download Entire Experiment</a></strong><br/>
+	{% endif %}
+      </p>
+    {% endfor %}
+  </div>
+  <form method="POST" action="/download/datafiles/" target="_blank">
+    <input type="hidden" name="expid" value="{{experiment.id}}"/>
 
     <div id="datasets">
       {% for dataset in experiment.dataset_set.all %}
 	<div class="dataset">
 	  <div class="dataset_title">
 	    <input type="checkbox" class="dataset_checkbox" name="dataset" value="{{dataset.id}}" />
-	      <strong><span style="color: #5e5e5e">DATASET {{ forloop.counter }}</span></strong>
-	    </div>
-	    <div class="dataset_info">
+	    <strong><span style="color: #5e5e5e">DATASET {{ forloop.counter }}</span></strong>
+	  </div>
+	  <div class="dataset_info">
 
-	      <div class="dataset_description">
-		<strong>Dataset Description</strong>: {{ dataset.description|safe }} <br />
-		<strong>Dataset Equipment</strong>:
-		{% for eq in dataset.equipment_set.all %}																	<a href="/equipment/{{eq.id}}/">{{ eq.key }}</a>
+	    <div class="dataset_description">
+	      <strong>Dataset Description</strong>: {{ dataset.description|safe }} <br />
+	      <strong>Dataset Equipment</strong>:
+	      {% for eq in dataset.equipment_set.all %}
+		<a href="/equipment/{{eq.id}}/">{{ eq.key }}</a>
 	      {% endfor %}
 	    </div>
 	    <div class="dataset_extrainfo">
@@ -364,11 +361,10 @@
 
 	      </div>
 	    </div>
-	    </div>
+	  </div>
 	</div>
       {% endfor %}
     </div>
     <input type="submit" value="Download Selected Files" />
   </form>
 </div>
-
