@@ -3,8 +3,10 @@
 {% load parametertypecheck %}
 {% load uploadify_tags %}
 
+
 {% block script %}
-<script type="text/javascript">
+
+  <script type="text/javascript">
     $("#uploadify").live("allUploadsComplete", function(e, data){
 	dataset_id = $(this).parents('.upload_files_container'
 				    ).siblings('.dataset_id').val();

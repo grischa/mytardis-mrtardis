@@ -178,8 +178,7 @@ class Experiment(models.Model):
 
 
 class ExperimentACL(models.Model):
-    """The ExperimentACL table is the core of the
-    `Tardis Authorisation framework
+    """The ExperimentACL table is the core of the `Tardis Authorisation framework
     <http://code.google.com/p/mytardis/wiki/AuthorisationEngineAlt>`_
 
     :attribute pluginId: the the name of the auth plugin being used
@@ -189,7 +188,7 @@ class ExperimentACL(models.Model):
     :attribute canRead: gives the user read access
     :attribute canWrite: gives the user write access
     :attribute canDelete: gives the user delete permission
-    :attribute owner: the experiment owner flag.
+    :attribute isOwner: the experiment owner flag.
     :attribute effectiveDate: the date when access takes into effect
     :attribute expiryDate: the date when access ceases
     :attribute aclOwnershipType: system-owned or user-owned.
