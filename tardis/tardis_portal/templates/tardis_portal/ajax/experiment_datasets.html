@@ -74,14 +74,13 @@
 
 	    $('.upload_files_link').each(function(index) {
 		$(this).show();
-		$(this).html('Upload Files To Dataset');
 	    });
-
+	    var message = escape( $(this).html());
 	    $(this).hide();
 
 	    dataset_id = $(this).siblings('.dataset_id').val();
 
-	    $(this).siblings(".upload_files_container").load("/ajax/upload_files/" + dataset_id + "/");
+	    $(this).siblings(".upload_files_container").load("/ajax/upload_files/" + dataset_id + "/" + "?message=" +  message );
 
 
 	});

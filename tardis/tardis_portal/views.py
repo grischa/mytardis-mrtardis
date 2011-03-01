@@ -1981,8 +1981,16 @@ def upload_files(request, dataset_id,
     :type dataset_id: integer
     :returns: A view containing an Uploadify *create files* button
     """
+
+    if 'message' in request.GET:
+        message = request.GET['message']
+    else:
+        message = "Upload Files to Dataset"
     url = reverse('tardis.tardis_portal.views.upload_complete')
-    c = Context({'upload_complete_url': url, 'dataset_id': dataset_id})
+    c = Context({'upload_complete_url': url,
+                 'dataset_id': dataset_id,
+                 'message': message,
+                 })
     return render_to_response(template_name, c)
 
 
