@@ -1,6 +1,11 @@
+import os
+import shutil
+from django.conf import settings
 from tardis.apps.mrtardis.models import HPCUser
 
+from tardis.tardis_portal.models import Dataset
 from tardis.tardis_portal.models import Dataset_File
+from tardis.tardis_portal.staging import duplicate_file_check_rename
 import tardis.apps.mrtardis.hpc as hpc
 
 import tardis.apps.mrtardis.secrets as secrets
@@ -225,3 +230,30 @@ def processMTZ(mtzfile):
             #print fields[4]
             parameters["spacegroup"] = int(fields[4])
     return parameters
+
+
+def add_staged_file_to_dataset(rel_filepath, dataset_id,
+                               mimetype="application/octet-stream"):
+    """
+    add file in STAGING_PATH to a dataset
+    """
+    originfilepath = os.path.join(settings.STAGING_PATH, rel_filepath)
+    dataset = Dataset.objects.get(pk=dataset_id)
+    newDatafile = Dataset_File()
+    newDatafile.dataset = dataset
+    newDatafile.size = os.path.getsize(originfilepath)
+    newDatafile.protocol = "file"
+    newDatafile.mimetype = mimetype
+    file_dir = "/" + str(dataset.experiment.id) + "/" + str(dataset.id) + "/"
+    file_path = file_dir + rel_filepath
+    prelim_full_file_path = settings.FILE_STORE_PATH + file_path
+    full_file_path = duplicate_file_check_rename(prelim_full_file_path)
+    if prelim_full_file_path == full_file_path:
+        newDatafile.filename = rel_filepath
+    else:
+        newDatafile.filename = full_file_path[len(settings.FILE_STORE_PATH)
+                                              + len(file_dir):]
+    newDatafile.url = "file://" + full_file_path[
+        len(settings.FILE_STORE_PATH):]
+    shutil.move(originfilepath, full_file_path)
+    newDatafile.save()

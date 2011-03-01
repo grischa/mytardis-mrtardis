@@ -13,4 +13,6 @@ urlpatterns = patterns('tardis.apps.mrtardis.views',
                         'displayResults'),
                        (r'^type_filtered_file_list/(?P<dataset_id>\d+)/$',
                         'type_filtered_file_list'),
+                       (r'^extractPDBzips/(?P<dataset_id>\d+)/$',
+                        'extractPDBzips'),
                        )

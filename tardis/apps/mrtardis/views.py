@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import zipfile
 
 from tardis.apps.mrtardis.utils import test_hpc_connection
+from tardis.apps.mrtardis.utils import add_staged_file_to_dataset
 #from tardis.apps.mrtardis.forms import HPCSetupForm
 from tardis.apps.mrtardis.models import HPCUser
 from tardis.apps.mrtardis.forms import DatasetDescriptionForm
@@ -166,14 +167,16 @@ def type_filtered_file_list(request, dataset_id):
 def extractPDBzips(request, dataset_id):
     """
     Extracts pdb files out of zips, adds them to the dataset and
-    removes the zip. Returns true for ajax if successful.
+    removes the zip. Returns 'true' for ajax if successful.
     """
     zipquery = Dataset_File.objects.filter(dataset__pk=dataset_id,
                                            filename__iendswith=".zip")
-    if len(zipquery):
+    if len(zipquery) == 0:
         return HttpResponseNotFound()
+    print "sadkfhaksfhgakjshfdasd"
     for zipfileobj in zipquery:
-        zippath = zipfileobj.get_storage_path()
+        print zipfileobj.id
+        zippath = zipfileobj.get_absolute_filepath()
         thiszip = zipfile.ZipFile(zippath, 'r')
         extractlist = []
         for filename in thiszip.namelist():
@@ -182,7 +185,9 @@ def extractPDBzips(request, dataset_id):
                 extractlist.append(filename)
         thiszip.extractall(settings.STAGING_PATH, extractlist)
         thiszip.close()
-       # for file in extractlist:
-        #    utils.add_staged_file_to_dataset(file, dataset_id)
-
+        for pdbfile in extractlist:
+            #print pdbfile
+            add_staged_file_to_dataset(pdbfile, dataset_id,
+                                       mimetype="chemical/x-pdb")
+        zipfileobj.deleteCompletely()
     return HttpResponse("true")

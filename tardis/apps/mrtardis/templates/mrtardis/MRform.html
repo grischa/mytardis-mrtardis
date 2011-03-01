@@ -26,30 +26,19 @@ $(document).ready(function(){
 	    }
 	});
     }
+
     function extractPDBzips() {
-	/* $.ajax({
-	    type: "GET";
-	    url: "{# url tardis.apps.mrtardis.views.extractPDBzips dataset.id #}",
+	console.log("nothing");
+	$.ajax({
+	    type: "GET",
+	    url: "{% url tardis.apps.mrtardis.views.extractPDBzips dataset.id %}",
 	    success: function(data) {
 		updateFileList(".pdb");
 	    }
-	}); */
-	console.log("nothing");
+	});
     }
     updateFileList(".mtz");
     updateFileList(".pdb");
-    $("#uploadMTZfile #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
-	updateFileList(".mtz");
-	updateParForm();
-    });
-    $("#uploadPDBfile #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
-	extractPDBzips();
-	//updateFileList(".pdb");
-    });
-
-    $("#uploadPDBfiles #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
-	updateFileList(".pdb");
-    });
 
     $('.upload_files_link').bind('click', function( event ){
 	$('.upload_files_container').each(function(index) {
@@ -62,6 +51,21 @@ $(document).ready(function(){
 	$(this).hide();
 	$(this).siblings(".upload_files_container"
 			).load("/ajax/upload_files/" + {{dataset.id}} + "/" + "?message=" +  message );
+	$("#uploadify").die("allUploadsComplete");
+	if (message.indexOf("MTZ") != -1) {
+	    $("#uploadify").live("allUploadsComplete",
+				 function(e, data){
+				     updateFileList(".mtz");
+				     updateParForm();
+				 });
+	} else if (message.indexOf("PDB") != -1) {
+	    console.log("pdb if statement");
+	    $("#uploadify").live("allUploadsComplete",
+				 function(e, data){
+				     console.log("we're bound");
+				     extractPDBzips();
+				 });
+	}
     });
 });
 </script>
@@ -72,7 +76,7 @@ $(document).ready(function(){
 </div></p>
 <p><b>Please upload your structure factors as MTZ file.</b> <br/>If you accidentally upload the wrong one, please cancel this form (see below) and start over.
 </p>
-<div id="uploadMTZfile">
+<div class="uploadMTZfile">
   <a class="upload_files_link">Upload your MTZ file</a>
   <div class="upload_files_container"></div>
 </div>
@@ -83,7 +87,7 @@ $(document).ready(function(){
 </div></p>
 <p><b>Please upload one or more PDB files.</b><br/> You can upload them separately or in a zip file or mix both.
 </p>
-<div id="uploadPDFfiles">
+<div class="uploadPDBfiles">
   <a class="upload_files_link">Upload your PDB file(s)</a>
   <div class="upload_files_container"></div>
   <input class="dataset_id" type="hidden" value="{{dataset.id}}" />
