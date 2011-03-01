@@ -1,4 +1,24 @@
 {% load parametertypecheck %}
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".dataset_metadata_toggle").toggle(
+	function(){
+	    $(this).text("[Show]");
+	    var href= $(this).attr("href");
+	    $(href).hide();
+	},
+	function(){
+	    $(this).text("[Hide]");
+	    var href= $(this).attr("href");
+	    $(href).show();
+	}
+    );
+    $(".dataset_metadata_toggle").click();
+});
+
+</script>
+{% endblock %}
 
 <div id="experiment_description">
 
@@ -38,7 +58,7 @@
   <p>
     {% if experiment.experimentparameterset_set.count %}
       <div class="dataset_extrainfo">
-	<strong>Experiment Metadata: </strong><a class="dataset_metadata_toggle" href="#dataset_metadata_{{forloop.counter}}">[Hide]</a>
+	<strong>Experiment Metadata: </strong><a class="dataset_metadata_toggle" href="#dataset_metadata_{{forloop.counter}}">[Show]</a>
 	<div class="dataset_metadata" id="dataset_metadata_{{forloop.counter}}">
 	  <ul>
 	    {% for parameterset in experiment.experimentparameterset_set.all %}
