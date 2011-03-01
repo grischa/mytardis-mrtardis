@@ -7,49 +7,95 @@ $(document).ready(function(){
 	    data: {
 		dataset: {{ dataset }}
 	    },
-	    //dataType: "json",
 	    success: function(data) {
 		$("#parForm").html(data);
 	    }
 	});
     }
-
-    $("#uploadify").live("allUploadsComplete", function(e, data){
-        dataset_id = {{ dataset }}
+    function updateFileList(type) {
+	$.ajax({
+	    type: "POST",
+	    url: "{% url tardis.apps.mrtardis.views.type_filtered_file_list dataset.id %}",
+	    data: {
+		type: type,
+	    },
+	    success: function(data) {
+		console.log(data);
+		console.log(type);
+		$(type).html(data);
+	    }
+	});
+    }
+    function extractPDBzips() {
+	/* $.ajax({
+	    type: "GET";
+	    url: "{# url tardis.apps.mrtardis.views.extractPDBzips dataset.id #}",
+	    success: function(data) {
+		updateFileList(".pdb");
+	    }
+	}); */
+	console.log("nothing");
+    }
+    updateFileList(".mtz");
+    updateFileList(".pdb");
+    $("#uploadMTZfile #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
+	updateFileList(".mtz");
 	updateParForm();
     });
-    $('.upload_files_link').live('click', function( event ){
+    $("#uploadPDBfile #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
+	extractPDBzips();
+	//updateFileList(".pdb");
+    });
+
+    $("#uploadPDBfiles #uploadify").die("allUploadsComplete").live("allUploadsComplete", function(e, data){
+	updateFileList(".pdb");
+    });
+
+    $('.upload_files_link').bind('click', function( event ){
 	$('.upload_files_container').each(function(index) {
             $(this).html("");
 	});
 	$('.upload_files_link').each(function(index) {
             $(this).show();
-            $(this).html('Upload Files To Dataset');
 	});
+	var message = escape( $(this).html());
 	$(this).hide();
-	dataset_id = $(this).siblings('.dataset_id').val();
-	$(this).siblings(".upload_files_container").load("/ajax/upload_files/" + dataset_id + "/");
+	$(this).siblings(".upload_files_container"
+			).load("/ajax/upload_files/" + {{dataset.id}} + "/" + "?message=" +  message );
     });
 });
 </script>
 <h2>Job/dataset name: {{ dataset.description }}</h2>
 <h3>MTZ file</h3>
+<p><b>Already stored files</b>
+<div id="fileList" class="mtz">
+</div></p>
 <p><b>Please upload your structure factors as MTZ file.</b> <br/>If you accidentally upload the wrong one, please cancel this form (see below) and start over.
 </p>
 <div id="uploadMTZfile">
-  <a href="uploadMTZfile">Click here to upload your MTZ file</a>
+  <a class="upload_files_link">Upload your MTZ file</a>
+  <div class="upload_files_container"></div>
 </div>
 
 <h3>PDB file(s)</h3>
+<p><b>Already stored files</b>
+<div id="fileList" class="pdb">
+</div></p>
 <p><b>Please upload one or more PDB files.</b><br/> You can upload them separately or in a zip file or mix both.
 </p>
 <div id="uploadPDFfiles">
-  <a href="uploadPDBfiles">Click here to upload your PDB file(s)</a>
+  <a class="upload_files_link">Upload your PDB file(s)</a>
+  <div class="upload_files_container"></div>
+  <input class="dataset_id" type="hidden" value="{{dataset.id}}" />
 </div>
 
 <h3>Run parameters</h3>
+<p>These files are going to be used for the molecular replacements
+<div id="fileList" class="mtz"></div>
+<div id="fileList" class="pdb"></div>
 <div id="parForm">
 </div>
+</p>
 
 
 <!-- debug <p>

@@ -11,4 +11,6 @@ urlpatterns = patterns('tardis.apps.mrtardis.views',
                         'parForm'),
                        (r'^displayResults/(?P<experiment_id>\d+)/$',
                         'displayResults'),
+                       (r'^type_filtered_file_list/(?P<dataset_id>\d+)/$',
+                        'type_filtered_file_list'),
                        )

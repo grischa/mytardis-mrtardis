@@ -1,9 +1,12 @@
+from django.conf import settings
 from django.shortcuts import render_to_response
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import HttpResponseNotFound
 from django.template import Context
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+import zipfile
 
 from tardis.apps.mrtardis.utils import test_hpc_connection
 #from tardis.apps.mrtardis.forms import HPCSetupForm
@@ -17,6 +20,9 @@ from tardis.tardis_portal.models import DatasetParameterSet
 from tardis.tardis_portal.models import DatasetParameter
 from tardis.tardis_portal.models import ParameterName
 from tardis.tardis_portal.models import Schema
+from tardis.tardis_portal.models import Dataset_File
+from tardis.tardis_portal.auth import decorators as authz
+
 #from tardis.tardis_portal.logger import logger
 
 
@@ -138,3 +144,45 @@ def displayResults(request, experiment_id):
             'experiment_id': experiment_id,
             })
     return render_to_response("mrtardis/displayResults.html", c)
+
+
+@authz.dataset_access_required
+def type_filtered_file_list(request, dataset_id):
+    if 'type' not in request.POST:
+        return HttpResponseNotFound('<h1>Wrong use of function</h1>')
+    type = request.POST['type']
+    print type
+    filequeryset = Dataset_File.objects.filter(
+        dataset__pk=dataset_id, filename__iendswith=type).order_by('filename')
+    for file in filequeryset:
+        print file
+    print filequeryset
+    c = Context({
+        'filequeryset': filequeryset,
+        })
+    return render_to_response('mrtardis/file_list.html', c)
+
+
+def extractPDBzips(request, dataset_id):
+    """
+    Extracts pdb files out of zips, adds them to the dataset and
+    removes the zip. Returns true for ajax if successful.
+    """
+    zipquery = Dataset_File.objects.filter(dataset__pk=dataset_id,
+                                           filename__iendswith=".zip")
+    if len(zipquery):
+        return HttpResponseNotFound()
+    for zipfileobj in zipquery:
+        zippath = zipfileobj.get_storage_path()
+        thiszip = zipfile.ZipFile(zippath, 'r')
+        extractlist = []
+        for filename in thiszip.namelist():
+            if filename.endswith((".pdb", ".PDB")) and \
+                    not filename.startswith("__MACOSX"):
+                extractlist.append(filename)
+        thiszip.extractall(settings.STAGING_PATH, extractlist)
+        thiszip.close()
+       # for file in extractlist:
+        #    utils.add_staged_file_to_dataset(file, dataset_id)
+
+    return HttpResponse("true")
